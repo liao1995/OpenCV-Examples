@@ -11,7 +11,7 @@
 #include <string.h>
 #define MAXFILENAMELEN 256
 
-int main(int argc, char *argv[])
+int _main(int argc, char *argv[])
 {
 	char path[MAXFILENAMELEN];
 	IplImage* img;

@@ -22,19 +22,27 @@ void onTrackbarSlide(int pos)
 int main(int argc, char* argv[])
 {
 	const char *filename = "萧忆情Alex-红颜旧.mp4";
+	// filename = NULL;
 	cvNamedWindow( "Video Player", CV_WINDOW_AUTOSIZE);
-	g_capture = cvCreateFileCapture( filename );
-	int frames = (int) cvGetCaptureProperty(
-			g_capture,
-			CV_CAP_PROP_FRAME_COUNT);
-	if ( frames != 0 )
+	if ( NULL != filename )
+		g_capture = cvCreateFileCapture( filename );
+	else
+		g_capture = cvCreateCameraCapture( 0 );	// read from camera
+
+	if ( NULL != filename )	// slide bar for video file
 	{
-		cvCreateTrackbar(
-				"Position",
-				"Video Player",
-				& g_slider_position,
-				frames,
-				onTrackbarSlide);
+		int frames = (int) cvGetCaptureProperty(
+				g_capture,
+				CV_CAP_PROP_FRAME_COUNT);
+		if ( frames > 0 )
+		{
+			cvCreateTrackbar(
+					"Position",
+					"Video Player",
+					& g_slider_position,
+					frames,
+					onTrackbarSlide);
+		}
 	}
 	IplImage * frame;
 	while (1)
@@ -42,13 +50,16 @@ int main(int argc, char* argv[])
 		frame = cvQueryFrame( g_capture );
 		if ( !frame ) break;
 		cvShowImage ( "Video Player", frame );
-		g_slider_position = cvGetCaptureProperty(
-				g_capture,
-				CV_CAP_PROP_POS_FRAMES);
-		cvSetTrackbarPos(
-				"Position",
-				"Video Player",
-				g_slider_position);
+		if ( NULL != filename )
+		{
+			g_slider_position = cvGetCaptureProperty(
+					g_capture,
+					CV_CAP_PROP_POS_FRAMES);
+			cvSetTrackbarPos(
+					"Position",
+					"Video Player",
+					g_slider_position);
+		}
 		char c = cvWaitKey(33);
 		if ( c == 27 ) break;	// ESC
 	}

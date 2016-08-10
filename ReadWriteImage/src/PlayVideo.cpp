@@ -11,6 +11,8 @@
 int				g_slider_position 	= 0;
 CvCapture*		g_capture			= NULL;
 const char* filename = "萧忆情Alex-红颜旧.mp4";
+int				g_num_pyr			= 0;
+IplImage*		frame_image;
 
 void onTrackbarSlide(int pos)
 {
@@ -56,6 +58,44 @@ void videoPlayer() {
 	}
 	cvReleaseCapture(&g_capture);
 	cvDestroyWindow("Video Player");
+}
+
+void onTrackerBar(int ss)
+{
+	g_num_pyr = ss;
+}
+IplImage* doPyrDown ( IplImage* in,
+		int filter = IPL_GAUSSIAN_5x5 )
+{
+	IplImage *out = cvCreateImage( cvSize( in->width/2, in->height/2 ),
+			in->depth, in->nChannels);
+	cvPyrDown ( in, out );
+	if (in != frame_image)
+		cvReleaseImage( &in );
+	return out;
+}
+void camPreview()
+{
+	IplImage* frame;
+	cvNamedWindow( "camReview" );
+	CvCapture* capture = cvCreateCameraCapture( 0 );
+	cvCreateTrackbar( "Size", "camReview", &g_num_pyr, 8,
+			onTrackerBar);
+	while (1) {
+		frame_image = frame = cvQueryFrame( capture );
+		if (!frame)
+			break;
+		for (int i = 0; i < g_num_pyr; ++i)
+			frame = doPyrDown( frame );
+		cvShowImage("camReview", frame);
+		if (frame != frame_image)
+			cvReleaseImage( &frame );
+		char c = cvWaitKey(33);
+		if (c == 27)
+			break; // ESC
+	}
+	cvReleaseCapture( &capture );
+	cvDestroyWindow( "camReview" );
 }
 
 void videoWriter()
@@ -105,7 +145,8 @@ void videoWriter()
 int main(int argc, char* argv[])
 {
 	// videoPlayer();
-	videoWriter();
+	//	videoWriter();
+	camPreview();
 	return 0;
 }
 

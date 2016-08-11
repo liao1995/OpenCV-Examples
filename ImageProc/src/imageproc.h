@@ -15,5 +15,6 @@ IplImage* doCanny( IplImage* in,
 		double lowThresh,
 		double highThresh,
 		double aperture);
+void alpha_blend_demo();
 
 #endif /* IMAGEPROC_H_ */

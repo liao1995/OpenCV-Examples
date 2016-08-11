@@ -55,7 +55,8 @@ int main (int argc, char *argv[])
 	// smooth_demo( image );
 	// doPyrDown_demo();
 	// doCanny_demo();
-	doPyrDownAndCanny_demo();
+	// doPyrDownAndCanny_demo();
+	alpha_blend_demo();
 	return 0;
 }
 
